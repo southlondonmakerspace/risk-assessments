@@ -28,7 +28,10 @@ cat << ////
 for f in $*; do
 	b=$( basename $f .md )
 	propername=$( awk '/# Tool/{x=1;next;}(x){print $0; exit(0);}' $f )
+	induction=$( awk '/Induction/{x=1;next;}(x){print $0; exit(0);}' $f )
+
 	echo "<tr><td colspan=9><a href=out/$b.html><h1>$propername</h1></a>"
+	echo "<tr><td colspan=9><b>Induction: $induction</b>"
 	awk '/<h2>Risk Ass/{x=1;}/<\/table>/{x=0;} (x){print $0;}' out/$b.html \
 		| sed 's/<h2>Risk Assessment<\/h2><table border=0>//'
 	echo "<tr><td colspan=9>"
