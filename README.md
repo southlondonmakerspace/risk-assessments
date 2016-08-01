@@ -7,8 +7,9 @@ need risk assessments in order to be safely and legally used.
 
 This project contains
 
-* The master copes of the risk assessements
+* The master copies of the risk assessements
 * Some scripts for formatting them
+* The outputs until we have a better place
 
 The master copies were made by scripts from the original
 shared spreadsheet, and are in Markdown format.

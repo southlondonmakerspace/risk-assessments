@@ -2,7 +2,7 @@
 
 # doit
 # convert rams from md to html (via json)
-# jcl/home/2016-07-31
+# jcl/othinking/2016-07-31
 
 set -e
 
