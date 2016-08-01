@@ -30,6 +30,19 @@ hazard tables on a single web page.
 The masters are in Markdown because non-technical people
 need to edit them, most likely at Github online editor.
 
+# The Hazard matrix
+
+Part of the script calculates the correct risk from the 
+severity and likelihood of the hazard, according to the
+table on discourse:
+
+                                  Theoretical  Very Unlikely  Unlikey May Happen Likely Certain
+   0 No injury 0 0 0 0 0 0
+   1 Minor injury 1 1 1 1 2 3
+   2 Significant injury 1 1 2 2 3 3
+   3 Serious injury 1 2 2 3 3 3
+   4 Fatality, life-changing injury 1 2 3 3 3
+
 # Required format
 
 The formatter accepts Markdown but with required headings,
