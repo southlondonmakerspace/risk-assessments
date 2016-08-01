@@ -50,3 +50,6 @@ Before 1-2 After 1-1
 
 * Set workpiece to appropriate height for comfortable operation (eg 1/2 user height)
 
+# History
+2016-08-01 11:58:19 / jcl: converted from spreadsheet
+

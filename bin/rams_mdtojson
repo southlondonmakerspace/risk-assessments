@@ -43,6 +43,7 @@ function suslevel($s)
 #	## Who
 #	## Severity/Likelihood
 #	## Controls
+#	# History
 #	
 
 
@@ -157,12 +158,33 @@ function firstofoneordie($a)
 	return($a[0]);
 }
 
+# only these sections permitted in input
+#
+$goodkeys = array(
+	'tool',
+	'induction',
+	'activity',
+	'personalprotectiveequipment',
+	'procedure',
+	'risk',
+	'history'
+);
+
 # this is the function with the knowledge
 # of the format of the input
 #
 function construct($arr)
 {
-	$keys = array_keys($arr);
+	global $goodkeys;
+
+	foreach ($arr as $k => $dummy) {
+		$k = preg_replace("/!+$/", "", $k);
+		if (!in_array($k, $goodkeys)) {
+			fprintf(STDERR, "Eek, input has key '%s', expecting (%s)\n",
+				$k, implode($goodkeys, ","));
+			exit(1);
+		}
+	}
 
 	$ra = array(
 		'tool' => firstofoneordie($arr['tool']),
@@ -170,7 +192,8 @@ function construct($arr)
 		'activity' => $arr['activity'],
 		'personalprotectiveequipment' => $arr['personalprotectiveequipment'],
 		'procedure' => $arr['procedure'],
-		'risk' => array());
+		'risk' => array(),
+		'history' => $arr['history']);
 
 	$k = 'risk';
 	while (isset($arr[$k])) {

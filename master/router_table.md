@@ -154,3 +154,6 @@ Before 4-1 After 4-1
 * Must be double-insulated or have a 3-prong plug in a grounded outlet. 
 * Power outlet needs a residual current device. RCD 
 
+# History
+2016-08-01 11:58:25 / jcl: converted from spreadsheet
+

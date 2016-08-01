@@ -76,3 +76,6 @@ Before 2-2 After 0-0
 
 * Safety goggles to be used.
 
+# History
+2016-08-01 11:58:19 / jcl: converted from spreadsheet
+

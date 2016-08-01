@@ -150,3 +150,6 @@ Before 3-3 After 1-1
 * dont stop the blade until the cut is complete
 * 
 
+# History
+2016-08-01 11:58:23 / jcl: converted from spreadsheet
+

@@ -1,0 +1,65 @@
+#!/usr/bin/php
+<?php
+
+# mkimage
+# make a simple placeholder image with some text
+# jcl/othinking/2016-08-01
+
+if (count($argv) < 3) {
+	fprintf(STDERR, "Usage: %s filename width height [colour [textcolour [text]]]\n",
+		$argv[0]);
+	exit(1);
+}
+
+define('FONT', 5);
+
+$fn = $argv[1];
+$w = 100;
+$h = 75;
+$c = 0xffffff;
+$tc = 0x000000;
+$t = "";
+
+if (isset($argv[1])) {
+	$fn = $argv[1];
+}
+if (isset($argv[2])) {
+	$w = intval($argv[2], 0);
+}
+if (isset($argv[3])) {
+	$h = intval($argv[3], 0);
+}
+if (isset($argv[4])) {
+	$c = intval($argv[4], 0);
+}
+if (isset($argv[5])) {
+	$tc = intval($argv[5], 0);
+}
+if (isset($argv[6])) {
+	$t = $argv[6];
+}
+
+$im = imagecreatetruecolor($w, $h);
+imagefilledrectangle($im, 0, 0, $w - 1, $h - 1, $c);
+if ($t != "") {
+	$tw = imagefontwidth(FONT) * strlen($t);
+	imagestring($im, FONT, ($w - $tw) / 2, $h / 2, $t, $tc);
+}
+
+$ext = pathinfo($fn, PATHINFO_EXTENSION);
+
+switch ($ext) {
+case 'png':
+	imagepng($im, $fn);
+	break;
+case 'jpg':
+	imagejpeg($im, $fn);
+	break;
+default:
+	fprintf(STDERR, "%s: unknown file extension '%s'\n",
+		$argv[0], $ext);
+}
+
+exit(0);
+
+# end

@@ -145,3 +145,6 @@ Before 2-3 After 2-1
 
 * The power lead must be positioned out of walkways and as close to wall edge as possible to remove trip hazards
 
+# History
+2016-08-01 11:58:22 / jcl: converted from spreadsheet
+

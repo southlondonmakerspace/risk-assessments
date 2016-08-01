@@ -80,3 +80,6 @@ Before 2-2 After 2-1
 
 * Safety goggles to be used.
 
+# History
+2016-08-01 11:58:24 / jcl: converted from spreadsheet
+

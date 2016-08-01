@@ -126,3 +126,6 @@ Before 4-2 After 4-0
 * Ensure device is connected via RCD
 * Hold dremel by insulated griping surfaces
 
+# History
+2016-08-01 11:58:20 / jcl: converted from spreadsheet
+

@@ -51,3 +51,6 @@ Before 1-2 After 1-0
 
 * Removed screws to be left to cool after removal.
 
+# History
+2016-08-01 11:58:23 / jcl: converted from spreadsheet
+

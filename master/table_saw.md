@@ -86,3 +86,6 @@ Before 2-2 After 2-1
 * Steady piece firmly thorugh cut.
 * Use blade guard at all times.
 
+# History
+2016-08-01 11:58:27 / jcl: converted from spreadsheet
+

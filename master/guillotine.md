@@ -61,3 +61,6 @@ Before 2-2 After 2-0
 
 * Make sure tool is stable and workpiece is secured.
 
+# History
+2016-08-01 11:58:21 / jcl: converted from spreadsheet
+

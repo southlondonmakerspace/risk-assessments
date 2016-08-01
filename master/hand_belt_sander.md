@@ -89,3 +89,6 @@ Before 2-2 After 2-1
 
 * Safety goggles to be used and the operator is to be inducted on the correct procedure for removing and installing sander belts
 
+# History
+2016-08-01 11:58:21 / jcl: converted from spreadsheet
+

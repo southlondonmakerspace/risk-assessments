@@ -57,3 +57,6 @@ Before 2-2 After 1-1
 
 * Always trim cable ties very close to leave no sharp ends
 
+# History
+2016-08-01 11:58:20 / jcl: converted from spreadsheet
+

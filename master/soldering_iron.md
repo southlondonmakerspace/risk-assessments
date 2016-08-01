@@ -84,3 +84,6 @@ Before 4-3 After 4-0
 * Visual check of machine and cable prior to use.
 * Equipment is CE marked.
 
+# History
+2016-08-01 11:58:26 / jcl: converted from spreadsheet
+

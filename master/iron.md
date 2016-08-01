@@ -51,3 +51,6 @@ Before 2-2 After 2-1
 * Equipment is CE marked
 * Iron not left on cloth
 
+# History
+2016-08-01 11:58:23 / jcl: converted from spreadsheet
+

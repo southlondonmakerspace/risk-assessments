@@ -305,6 +305,12 @@ function show_hazardlist($hazs)
 	printf("</table>");
 }
 
+function show_history($list)
+{
+	html_h(2, "History");
+	showlistbullet($list);
+}
+
 function doit($filename)
 {
 	global $toolimage;
@@ -329,6 +335,7 @@ function doit($filename)
 		$json->procedure->after);
 
 	show_hazardlist($json->risk);
+	show_history($json->history);
 
 	html_bot();
 }

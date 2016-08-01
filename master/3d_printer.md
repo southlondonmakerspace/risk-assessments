@@ -64,3 +64,6 @@ Before 2-3 After 2-0
 
 * Do not put hands inside the machine whilst it is operational
 
+# History
+2016-08-01 11:58:18 / jcl: converted from spreadsheet
+

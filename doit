@@ -13,14 +13,16 @@ for f in master/*.md; do
 	#
 	if [ ! -f out/$b.json -o master/$b.md -nt out/$b.json ]; then
 		echo "making out/$b.json"
-		bin/rams_mdtojson master/$b.md > out/$b.json
+		bin/rams_mdtojson master/$b.md > out/$b.json.tmp
+		mv out/$b.json.tmp out/$b.json
 	fi
 
 	# build the html file if json changed
 	#
 	if [ ! -f out/$b.html -o out/$b.json -nt out/$b.html ]; then
 		echo "making out/$b.html"
-		bin/rams_jsontonice out/$b.json > out/$b.html
+		bin/rams_jsontonice out/$b.json > out/$b.html.tmp
+		mv out/$b.html.tmp out/$b.html
 	fi
 
 	# until we get good pictures
@@ -28,7 +30,7 @@ for f in master/*.md; do
 	#
 	if [ ! -f images/$b.jpg ]; then
 		echo "making images/$b.jpg"
-		convert xc:grey -geometry 800x800 images/$b.jpg
+		bin/mkimage images/$b.jpg 400 300 0xeeeeee 0x000000 "placeholder for $b"
 	fi
 done
 

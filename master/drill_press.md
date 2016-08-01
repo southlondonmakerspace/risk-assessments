@@ -94,3 +94,6 @@ Before 2-1 After 2-1
 
 * Properly clamp workpieces
 
+# History
+2016-08-01 11:58:20 / jcl: converted from spreadsheet
+

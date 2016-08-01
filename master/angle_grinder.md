@@ -89,3 +89,6 @@ Before 3-2 After 2-1
 * Safety goggles to be used and the operator is to be inducted on the correct procedure for removing and discs
 * Workpiece to be secured
 
+# History
+2016-08-01 11:58:18 / jcl: converted from spreadsheet
+
