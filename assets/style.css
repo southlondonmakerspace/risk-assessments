@@ -1,0 +1,23 @@
+/* style.css
+ * stylesheet for makers rams
+ * jcl/othinking/2016-07-25
+ */
+
+BODY {
+	font-family:sans-serif;
+	font-size:12px;
+}
+A:link{color:black}
+A:visited{color:black}
+h1 { color: white; background-color: red; vertical-align: middle}
+h2 { color: red }
+h3 { color: black }
+li { font-size:12px }
+td, th {
+	font-family:sans-serif;
+	font-size:10px;
+	border-bottom: 1px solid #888;
+	text-align: left;
+}
+
+/* end */

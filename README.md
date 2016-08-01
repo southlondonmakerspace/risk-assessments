@@ -1,10 +1,32 @@
-# h1
+# South London Maker Space Risk Assessments
 
-blah blah
+jcl/2016-07-31
 
-## h2
+At South London Maker Space we have many tools, most of which
+need risk assessments in order to be safely and legally used.
 
-asdf asdf and **boldy** going where ~~no thing~~nothing has ever been.
+This project contains
 
-Fri Jul 29 16:38:03 BST 2016
-Edited at github
+* The master copes of the risk assessements
+* Some scripts for formatting them
+
+The master copies were made by scripts from the original
+shared spreadsheet, and are in Markdown format.
+
+The layout of them for use is done into HTML via JSON.
+
+The masters are in Markdown because non-technical people
+need to edit them, most likely at Github online editor.
+
+# How to remake the output files
+
+ git pull origin master
+ ./doit
+
+# Where to put the output files
+
+Ideally we want to put them on discourse.southlondonmakerspace.org,
+however there are currently some formatting and logistical problems
+in doing so.
+
+(end)

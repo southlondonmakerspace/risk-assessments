@@ -1,0 +1,198 @@
+#!/usr/bin/php
+<?php
+
+# rams_mdtojson
+# convert a (special) markdown file to json
+# jcl/othinking/2016-07-31
+
+# we have risk-assessment/method-statements (RAMS) in
+# some very simple markdown files
+# this script converts that to json
+
+$prog = $argv[0];
+
+if (!isset($argv[1])) {
+	fprintf(STDERR, "Usage: %s filename\n", $prog);
+	exit(1);
+}
+$filename = $argv[1];
+
+$file = file($filename, FILE_IGNORE_NEW_LINES);
+
+function suslevel($s)
+{
+	$n = 0;
+	while (preg_match("/^#/", $s)) {
+		++$n;
+		$s = substr($s, 1);
+	}
+
+	return($n);
+}
+
+#	# Tool
+#	3D Printer
+#	# Induction
+#	# Activity
+#	# Personal Protective Equipment
+#	# Procedure
+#	## Before
+#	## During
+#	## After
+#	# Hazard
+#	## Who
+#	## Severity/Likelihood
+#	## Controls
+#	
+
+
+function eat($level)
+{
+	global $stream;
+
+	if (count($stream) == 0) {
+		return(array());
+	}
+
+	$res = array();
+	while (count($stream) > 0) {
+		$item = array_shift($stream);
+		$n = suslevel($item);
+		if ($n == 0) {
+			$item = trim(substr($item, $n));
+			if (preg_match("/^\* /", $item)) {
+				$item = substr($item, 2);
+			}
+			$res[] = $item;
+
+		} else 	if ($n > $level) {
+			$k = strtolower(trim(substr($item, $n)));
+			$k = preg_replace("/[^a-z]/", "", $k);
+			while (isset($res[$k])) {
+				$k .= '!';
+			}
+			$res[$k] = eat($n);
+
+		} else {
+			array_unshift($stream, $item);
+			break;
+		}
+	}
+
+	return($res);
+}
+
+function parse($lines)
+{
+	global $stream;
+
+	$stream = array();
+	foreach ($lines as $line) {
+		if ($line != "") {
+			$stream[] = $line;
+		}
+	}
+	return(eat(0));
+}
+
+
+function allkeysnumeric($a)
+{
+	foreach ($a as $k => $v) {
+		if (!is_numeric($k)) {
+			return(false);
+		}
+	}
+	return(true);
+}
+
+# make simple compact json
+#
+function jsonify($x)
+{
+	if ($x === false) {
+		return('false');
+	} else if ($x === true) {
+		return('true');
+	} else if (is_string($x)) {
+		return(sprintf("\"%s\"", addslashes($x)));;
+	}else if (is_numeric($x)) {
+		return(sprintf("%s", $x));
+	}
+	if (!is_array($x)) {
+		fprintf(STDERR, "BUG\n");
+		exit(1);
+	}
+	if (allkeysnumeric($x)) {
+		$s = "[";
+		$sep = "";
+		foreach ($x as $k => $v) {
+			$s .= $sep . jsonify($v);
+			$sep = ",";
+		}
+		$s .= "]";
+	} else {
+		$s = "{";
+		$sep = "";
+		foreach ($x as $k => $v) {
+			$s .= sprintf("%s\"%s\":%s", $sep, $k, jsonify($v));
+			$sep = ",";
+		}
+		$s .= "}";
+	}
+	return($s);
+}
+
+# some fields such as 'tool' 
+# must have only one entry
+#
+function firstofoneordie($a)
+{
+	if (count($a) != 1) {
+		fprintf(STDERR, "way too late to make a good error message (count is %d, should be 1)\n",
+			count($a));
+		exit(1);
+	}
+
+	return($a[0]);
+}
+
+# this is the function with the knowledge
+# of the format of the input
+#
+function construct($arr)
+{
+	$keys = array_keys($arr);
+
+	$ra = array(
+		'tool' => firstofoneordie($arr['tool']),
+		'induction' => firstofoneordie($arr['induction']),
+		'activity' => $arr['activity'],
+		'personalprotectiveequipment' => $arr['personalprotectiveequipment'],
+		'procedure' => $arr['procedure'],
+		'risk' => array());
+
+	$k = 'risk';
+	while (isset($arr[$k])) {
+		$sl = $arr[$k]['severitylikelihood'][0];
+		$slbox = sscanf($sl, "Before %d-%d After %d-%d");
+		if (!is_numeric($slbox[3])) {
+			fprintf(STDERR, "bad format severitylikelihood (%s)\n", $sl);
+			exit(1);
+		}
+		$arr[$k]['severitylikelihood'] =
+			array(	'before' => array('severity' => $slbox[0],
+						'likelihood' => $slbox[1]),
+				'after' => array('severity' => $slbox[2],
+						'likelihood' => $slbox[3]));
+		$ra['risk'][] = $arr[$k];
+		$k .= '!';
+	}
+
+	printf("%s\n", jsonify($ra));
+}
+
+$x = parse($file);
+construct($x);
+
+# end

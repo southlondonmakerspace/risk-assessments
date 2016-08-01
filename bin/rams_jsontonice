@@ -1,0 +1,343 @@
+#!/usr/bin/php
+<?php
+
+# rams_jsontonice
+# take a json rams and format it nicely
+# jcl/othinking/2016-07-31
+
+# our risk-assessments/method-statements (RAMS) are in json
+# this nasty script compiles an html file
+# which looks just about okay
+
+$prog = $argv[0];
+
+function html_top()
+{
+	printf("<html>");
+	printf("<head>");
+	printf("<link rel=stylesheet href=\"../assets/style.css\" type=\"text/css\" media=screen>\n");
+	printf("</head>");
+	printf("<body>");
+
+
+}
+
+function html_bot()
+{
+	printf("</body>");
+	printf("</html>");
+}
+
+function html_img($filename, $dir = '.', $width = false)
+{
+	printf("<img src=\"%s/%s\" %s>",
+		$dir, $filename,
+		$width ? sprintf("width=\"%s\"", $width) :  "");
+}
+
+function html_h($n, $text)
+{
+	printf("<h%d>%s</h%d>", $n, $text, $n);
+}
+
+function showlist($list, $pre = "", $head = "", $tail = "")
+{
+	printf("%s", $head);
+	foreach ($list as $item) {
+		printf("%s%s\n", $pre, $item);
+	}
+	printf("%s", $tail);
+}
+
+function showlistbullet($list)
+{
+	showlist($list, "<li>", "<ul>", "</ul>");
+}
+
+function show_tool($name)
+{
+	global $maxhaz;
+
+	printf("<table border=0 cellspacing=0 width=\"100%%\">");
+	printf("<tr bgcolor=red>");
+
+	printf("<td align=left>");
+	html_img("slmslogo-64.png", "../assets");
+
+	printf("<td>");
+	html_h(1, sprintf("Risk Assessment / %s", $name, $maxhaz));
+
+	printf("<td bgcolor=\"%s\">", dangercolour($maxhaz));
+	show_dangerlevel($maxhaz, true);
+	printf("</table>");
+}
+
+function show_induction($induction)
+{
+	html_h(2, sprintf("Induction: %s", $induction));
+}
+
+function show_activity($actlist)
+{
+	global $toolimage;
+
+	html_h(2, "Activity");
+	printf("<table border=0 width=\"100%%\">");
+	printf("<tr valign=top>");
+	printf("<td>");
+	showlistbullet($actlist);
+	printf("<td>");
+	html_img($toolimage, "../images", 300);
+	printf("</table>");
+}
+
+function show_ppeimages($list)
+{
+	printf("<table>");
+	printf("<tr valign=top>");
+	foreach ($list as $name) {
+		$n = strtolower($name);
+		$n = preg_replace("/\(.*$/", "", $n);
+		$n = preg_replace("/[^a-z]/", "", $n);
+
+		if (in_array($n, array("earprotection", "eyeprotection", "dustmask"))) {
+			printf("<td align=center>");
+			html_img($n . ".jpg", "../assets", 150);
+			printf("<br><small>%s</small>", $name);
+		}
+	}
+	printf("</table>");
+}
+
+function show_personalprotectiveequipment($list)
+{
+	html_h(2, "Personal Protective Equipment");
+	printf("<table border=0 width=\"100%%\">");
+	printf("<tr valign=top>");
+	printf("<td>");
+	showlistbullet($list);
+
+	printf("<td align=right>");
+	show_ppeimages($list);
+	printf("</table>");
+}
+
+function show_procedure($before, $during, $after)
+{
+	html_h(2, "Procedure");
+	printf("<table border=0>\n");
+	printf("<tr valign=\"top\">");
+	printf("<th>%s", "Before");
+	printf("<th>%s", "During");
+	printf("<th>%s", "After");
+	printf("<tr valign=\"top\">");
+	printf("<td>");
+	showlistbullet($before);
+	printf("<td>");
+	showlistbullet($during);
+	printf("<td>");
+	showlistbullet($after);
+	printf("</table>\n");
+}
+
+
+# levels of severity and likelihood
+# and the matrix of their risks
+# are critical
+
+$sevnames = array(
+		0 => "No injury",
+		1 => "Minor injury",
+		2 => "Significant injury",
+		3 => "Serious injury",
+		4 => "Fatality, life-changing injury");
+$liknames = array(
+		0 => "Theoretical",
+		1 => "Very unlikely",
+		2 => "Unlikely",
+		3 => "May happen",
+		4 => "Likely",
+		5 => "Certain");
+
+$risknames = array(
+		0 => "None",	
+		1 => "Low",
+		2 => "Medium",
+		3 => "High");
+$risknameslong = array(
+		0 => "No Risk",	
+		1 => "Low Risk",
+		2 => "Medium Risk",
+		3 => "High Risk");
+$riskcolours = array(
+		0 => "grey",
+		1 => "#44ff44",
+		2 => "yellow",
+		3 => "#ff4444");
+
+$sevlik = array(
+	array(0, 0, 0, 0, 0, 0),
+	array(1, 1, 1, 1, 2, 3),
+	array(1, 1, 2, 2, 3, 3),
+	array(1, 2, 2, 3, 3, 3),
+	array(1, 2, 3, 3, 3, 3));
+
+function dangerlevel($sev, $lik)
+{
+	global $sevlik;
+	return($sevlik[$sev][$lik]);
+}
+
+function show_sev($s)
+{
+	global $sevnames;
+
+	if (!isset($sevnames[$s])) {
+		fprintf(STDERR, "unknown severity level '%s'\n", $s);
+		exit(1);
+	}
+
+	printf("<small>Level %s<br></small>%s", $s, $sevnames[$s]);
+}
+
+function show_lik($l)
+{
+	global $liknames;
+
+	if (!isset($liknames[$l])) {
+		fprintf(STDERR, "unknown likelihood level '%s'\n", $l);
+		exit(1);
+	}
+
+	printf("<small>Level %s<br></small>%s", $l, $liknames[$l]);
+}
+
+function dangercolour($d)
+{
+	global $riskcolours;
+
+	return($riskcolours[$d]);
+}
+
+function show_dangerlevel($d, $long = false)
+{
+	global $risknames, $risknameslong, $riskcolours;
+	printf("<span style=\"background-color:%s\"><small>Level %d</small><br>%s</span>",
+		$riskcolours[$d],
+		$d,
+		$long ? $risknameslong[$d] : $risknames[$d]);
+}
+
+function show_hazard($haz)
+{
+	printf("<tr valign=\"top\">");
+	printf("<th>");
+	showlist($haz->hazard);
+	printf("<td>");
+	showlist($haz->who);
+
+	printf("<td>");
+	show_sev($haz->severitylikelihood->before->severity);
+	printf("<td>");
+	show_lik($haz->severitylikelihood->before->likelihood);
+
+	$d = dangerlevel(
+			$haz->severitylikelihood->before->severity,
+			$haz->severitylikelihood->before->likelihood);
+	printf("<td bgcolor=\"%s\">", dangercolour($d));
+	show_dangerlevel($d);
+
+	printf("<td>");
+	showlistbullet($haz->controls);
+
+	printf("<td>");
+	show_sev($haz->severitylikelihood->after->severity);
+	printf("<td>");
+	show_lik($haz->severitylikelihood->after->likelihood);
+
+	$d = dangerlevel(
+			$haz->severitylikelihood->after->severity,
+			$haz->severitylikelihood->after->likelihood);
+	printf("<td bgcolor=\"%s\">", dangercolour($d));
+	show_dangerlevel($d);
+	printf("\n");
+}
+
+function maxhazard($hazs)
+{
+	$maxd = 0;
+
+	foreach ($hazs as $haz) {
+		$d = dangerlevel(
+			$haz->severitylikelihood->before->severity,
+			$haz->severitylikelihood->before->likelihood);
+
+		$maxd = max($maxd, $d);
+	}
+
+	return($maxd);
+}
+
+function show_hazardlist($hazs)
+{
+	html_h(2, "Risk Assessment");
+	printf("<table border=0>");
+	printf("<tr>");
+	printf("<th>%s", "Hazard");
+	printf("<th>%s", "Persons");
+	printf("<th colspan=3>%s", "Before Controls");
+	printf("<th>%s", "Controls");
+	printf("<th colspan=3>%s", "After Controls");
+	printf("<tr>");
+	printf("<th>%s", "");
+	printf("<th>%s", "");
+	printf("<th>%s", "Severity");
+	printf("<th>%s", "Likelihood");
+	printf("<th>%s", "Risk");
+	printf("<th>%s", "");
+	printf("<th>%s", "Severity");
+	printf("<th>%s", "Likelihood");
+	printf("<th>%s", "Risk");
+
+	foreach ($hazs as $haz) {
+		show_hazard($haz);
+	}
+	printf("</table>");
+}
+
+function doit($filename)
+{
+	global $toolimage;
+	global $maxhaz;
+
+	$file = file_get_contents($filename, FILE_IGNORE_NEW_LINES);
+	$json = json_decode($file);
+
+	html_top();
+
+	$maxhaz = maxhazard($json->risk);
+
+	$toolimage = basename($filename, '.json') . ".jpg";
+	show_tool($json->tool);
+	show_induction($json->induction);
+	show_activity($json->activity);
+	show_personalprotectiveequipment($json->personalprotectiveequipment);
+
+	show_procedure(
+		$json->procedure->before,
+		$json->procedure->during,
+		$json->procedure->after);
+
+	show_hazardlist($json->risk);
+
+	html_bot();
+}
+
+if (!isset($argv[1])) {
+	fprintf(STDERR, "Usage: %s filename\n", $prog);
+	exit(1);
+}
+
+doit($argv[1]);
+
+# end
