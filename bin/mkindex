@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# mkindex
+# make a simple index
+# jcl/othinking/2016-08-01
+
+echo "<h1>SLMS RAMS</h1>"
+
+echo "<ul>"
+
+for f in $*; do
+	b=$( basename $f .md )
+	last=$( tail -2 $f | tr -d '\n' )
+	echo "<li><a href=out/$b.html>$b</a> (<small>$last</small>)"
+done
+
+echo "</ul>"
+
+# end
