@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# mksummary
+# make a longer index, include assessment table
+# jcl/othinking/2016-08-01
+
+cat << ////
+<html>
+<head>
+ <link rel=stylesheet href="assets/style.css" type="text/css" media=screen>
+</head>
+<body>
+<table border=0 cellspacing=0 width="100%">
+ <tr bgcolor=red>
+  <td align=left><img src="assets/slmslogo-64.png">
+  <td><h1>SLMS Risk Assessments Summary</h1>
+</table>
+
+<p>This summary was automatically updated from Github edits at `date '+%Y-%m-%d %H:%M:%S'`</h1>
+
+<table>
+////
+
+# shameful mushy scripting very dependent
+# on the exact format out the machine-made htmls
+#
+for f in $*; do
+	b=$( basename $f .md )
+	propername=$( awk '/# Tool/{x=1;next;}(x){print $0; exit(0);}' $f )
+	echo "<tr><td colspan=9><a href=out/$b.html><h1>$propername</h1></a>"
+	awk '/<h2>Risk Ass/{x=1;}/<\/table>/{x=0;} (x){print $0;}' out/$b.html \
+		| sed 's/<h2>Risk Assessment<\/h2><table border=0>//'
+	echo "<tr><td colspan=9>"
+	awk '/<\/table><h2>History/{x=1;}/<\/ul>/{x=0;} (x){print $0;}' out/$b.html \
+		| sed 's/<\/table><h2>History<\/h2>/History/'
+done
+
+cat << ////
+</table>
+<hr>
+`date`
+////
+
+# end
