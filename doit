@@ -34,4 +34,6 @@ for f in master/*.md; do
 	fi
 done
 
+bin/mksummary master/*.md > index.html
+
 # end
