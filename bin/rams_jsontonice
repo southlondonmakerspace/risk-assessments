@@ -15,11 +15,10 @@ function html_top()
 {
 	printf("<html>");
 	printf("<head>");
+	printf("<link rel=\"icon\" type=\"image/png\" href=\"../assets/favicon.ico\">\n");
 	printf("<link rel=stylesheet href=\"../assets/style.css\" type=\"text/css\" media=screen>\n");
 	printf("</head>");
 	printf("<body>");
-
-
 }
 
 function html_bot()
@@ -171,7 +170,7 @@ $risknameslong = array(
 		3 => "High Risk");
 $riskcolours = array(
 		0 => "grey",
-		1 => "#44ff44",
+		1 => "#22ff22",
 		2 => "yellow",
 		3 => "#ff4444");
 

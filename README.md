@@ -34,14 +34,18 @@ need to edit them, most likely at Github online editor.
 
 Part of the script calculates the correct risk from the 
 severity and likelihood of the hazard, according to the
-table on discourse:
+table on discourse from 2016-07-25:
 
-                                  Theoretical  Very Unlikely  Unlikey May Happen Likely Certain
-   0 No injury 0 0 0 0 0 0
-   1 Minor injury 1 1 1 1 2 3
-   2 Significant injury 1 1 2 2 3 3
-   3 Serious injury 1 2 2 3 3 3
-   4 Fatality, life-changing injury 1 2 3 3 3
+| Level | Description | Theoretical | Very Unlikely | Unlikely | May Happen |  Likely | Certain |
+|-|:-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| 0 | No injury				|None  |None  |None  |None  |None  |None  |
+| 1 | Minor injury			|Low   |Low   |Low   |Low   |Medium|High  |
+| 2 | Significant injury		|Low   |Low   |Medium|Medium|High  |High  |
+| 3 | Serious injury			|Low   |Medium|Medium|High  |High  |High  |
+| 4 | Fatality, life-changing injury	|Low   |Medium|High  |High  |High  |High  |
+
+If we want to change this, it's a simple change to the code
+to get all the RAs updated.
 
 # Required format
 

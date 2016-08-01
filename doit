@@ -34,6 +34,7 @@ for f in master/*.md; do
 	fi
 done
 
-bin/mksummary master/*.md > index.html
+echo "making index.html"
+bin/mksummary master/*.md > index.html.tmp && mv index.html.tmp index.html
 
 # end
