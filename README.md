@@ -36,13 +36,13 @@ Part of the script calculates the correct risk from the
 severity and likelihood of the hazard, according to the
 table on discourse from 2016-07-25:
 
-| Level | Description | Theoretical | Very Unlikely | Unlikely | May Happen |  Likely | Certain |
-|-|:-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 0 | No injury				|None  |None  |None  |None  |None  |None  |
-| 1 | Minor injury			|Low   |Low   |Low   |Low   |Medium|High  |
-| 2 | Significant injury		|Low   |Low   |Medium|Medium|High  |High  |
-| 3 | Serious injury			|Low   |Medium|Medium|High  |High  |High  |
-| 4 | Fatality, life-changing injury	|Low   |Medium|High  |High  |High  |High  |
+    Level   Description                      Theoretical   Very Unlikely   Unlikely   May Happen   Likely   Certain
+    -----   ------------------------------   -----------   -------------   --------   ----------   ------   -------
+      0     No injury                           None           None          None        None       None     None
+      1     Minor injury                        Low            Low           Low         Low        Medium   High
+      2     Significant injury                  Low            Low           Medium      Medium     High     High
+      3     Serious injury                      Low            Medium        Medium      High       High     High
+      4     Fatality, life-changing injury      Low            Medium        High        High       High     High
 
 If we want to change this, it's a simple change to the code
 to get all the RAs updated.
