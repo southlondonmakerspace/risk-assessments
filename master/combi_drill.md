@@ -78,4 +78,5 @@ Before 2-2 After 0-0
 
 # History
 2016-08-01 11:58:19 / jcl: converted from spreadsheet
+2016-08-01 / jcl: test edit at github
 
