@@ -26,10 +26,36 @@ for f in master/*.md; do
 	fi
 done
 
+echo -n '' > /tmp/$$.tool.tmp
+for f in out/*.discourse; do
+	b=$( basename "$f" .discourse )
+	toolname=$( awk '(NR==2){print; exit(0);}' master/$b.md )
+	echo "$b.md\t$toolname" >> /tmp/$$.tool.tmp
+done
+
+# check no tool is defined in more than one file
+#	we use the 'nice tool name' in the md file
+#	to name the discourse articles
+#	if we have a duplicate it will make a cryptic
+#	"422 Unprocessable Entity"
+#	(if we pulled the api response as json it
+#	would normally be a clear error)
+#
+cat /tmp/$$.tool.tmp \
+| awk -F\\t '
+{	if (x[$2]) {
+		printf("%s: toolname \"%s\" already in %s\n",
+			$1, $2, x[$2]);
+		exit(1);
+	}
+	x[$2] = $1;
+}
+'
+
 for f in out/*.discourse; do
 	b=$( basename "$f" .discourse )
 	if [ out/$b.html -nt out/$b.discourse ]; then
-		echo "updating $b"
+		echo "==== updating $b ===="
 
 		# extract our topic and post ids rough from json
 		#
@@ -42,24 +68,19 @@ for f in out/*.discourse; do
 		toolname=$( awk '(NR==2){print; exit(0);}' master/$b.md )
 		echo "  toolname /$toolname/"
 
-		# create a temporary html just of the body
-		#
-		cat out/$b.html \
-		| tr -d '\n' \
-		| sed 's/^.*<body>//' \
-		| sed 's/<\/body>.*$//' > /tmp/$$.tmp
-
 		# do the updates
+		#	we update the topic to something unique
+		#	as belt-and-braces against duplicate titles
 		#
 		topic="$toolname (`date '+%Y-%m-%d %H:%M:%S'`)"
 		echo "  updating topic $topicid to be '$topic'"
-		bin/discourse_updatetopic "$topicid" "$topic"
+		bin/discourse_updatetopic "$topicid" "$topic" > /tmp/$b.up1
 		topic="$toolname (Risk Assessment)"
 		echo "  updating topic $topicid to be '$topic'"
-		bin/discourse_updatetopic "$topicid" "$topic"
+		bin/discourse_updatetopic "$topicid" "$topic" > /tmp/$b.up2
+
 		echo "  updating post $postid to new contents"
-		bin/discourse_updatepost "$postid" "/tmp/$$.tmp"
-		rm -f /tmp/$$.tmp
+		bin/discourse_updatepost "$postid" "out/$b.body" > /tmp/$b.up3
 
 		# say done
 		#

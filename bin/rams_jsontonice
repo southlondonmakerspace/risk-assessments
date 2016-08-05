@@ -2,7 +2,7 @@
 <?php
 
 # rams_jsontonice
-# take a json rams and format it nicely
+# take a json rams and format it nicely as the body of html
 # jcl/othinking/2016-07-31
 
 # our risk-assessments/method-statements (RAMS) are in json
@@ -10,22 +10,6 @@
 # which looks just about okay
 
 $prog = $argv[0];
-
-function html_top()
-{
-	printf("<html>");
-	printf("<head>");
-	printf("<link rel=\"icon\" type=\"image/png\" href=\"../assets/favicon.ico\">\n");
-	printf("<link rel=stylesheet href=\"../assets/style.css\" type=\"text/css\" media=screen>\n");
-	printf("</head>");
-	printf("<body>");
-}
-
-function html_bot()
-{
-	printf("</body>");
-	printf("</html>");
-}
 
 function html_img($filename, $dir = '.', $width = false)
 {
@@ -37,6 +21,10 @@ function html_img($filename, $dir = '.', $width = false)
 function html_h($n, $text)
 {
 	printf("<h%d>%s</h%d>", $n, $text, $n);
+	# this is a workaround for bug in discourse
+	if ($n == 1) {
+		printf("\n\n");
+	}
 }
 
 function showlist($list, $pre = "", $head = "", $tail = "")
@@ -57,18 +45,10 @@ function show_tool($name)
 {
 	global $maxhaz;
 
-	printf("<table border=0 cellspacing=0 width=\"100%%\">");
-	printf("<tr bgcolor=red>");
-
-	printf("<td align=left>");
-	html_img("slmslogo-64.png", "../assets");
-
-	printf("<td>");
-	html_h(1, sprintf("Risk Assessment / %s", $name, $maxhaz));
-
-	printf("<td bgcolor=\"%s\">", dangercolour($maxhaz));
-	show_dangerlevel($maxhaz, true);
-	printf("</table>");
+	html_h(1, sprintf("Tool: %s", $name));
+	html_h(2, sprintf("Risk: %s", fmt_dangerlevel($maxhaz, true)));
+	#printf("<td bgcolor=\"%s\">", dangercolour($maxhaz));
+	#printf("</table>");
 }
 
 function show_induction($induction)
@@ -81,19 +61,12 @@ function show_activity($actlist)
 	global $toolimage;
 
 	html_h(2, "Activity");
-	printf("<table border=0 width=\"100%%\">");
-	printf("<tr valign=top>");
-	printf("<td>");
 	showlistbullet($actlist);
-	printf("<td>");
-	html_img($toolimage, "../images", 300);
-	printf("</table>");
+	#html_img($toolimage, "../images", 300);
 }
 
 function show_ppeimages($list)
 {
-	printf("<table>");
-	printf("<tr valign=top>");
 	foreach ($list as $name) {
 		$n = strtolower($name);
 		$n = preg_replace("/\(.*$/", "", $n);
@@ -105,20 +78,13 @@ function show_ppeimages($list)
 			printf("<br><small>%s</small>", $name);
 		}
 	}
-	printf("</table>");
 }
 
 function show_personalprotectiveequipment($list)
 {
 	html_h(2, "Personal Protective Equipment");
-	printf("<table border=0 width=\"100%%\">");
-	printf("<tr valign=top>");
-	printf("<td>");
 	showlistbullet($list);
-
-	printf("<td align=right>");
-	show_ppeimages($list);
-	printf("</table>");
+	#show_ppeimages($list);
 }
 
 function show_procedure($before, $during, $after)
@@ -170,9 +136,9 @@ $risknameslong = array(
 		3 => "High Risk");
 $riskcolours = array(
 		0 => "grey",
-		1 => "#22ff22",
-		2 => "yellow",
-		3 => "#ff4444");
+		1 => "green",
+		2 => "orange",
+		3 => "red");
 
 $sevlik = array(
 	array(0, 0, 0, 0, 0, 0),
@@ -196,7 +162,7 @@ function show_sev($s)
 		exit(1);
 	}
 
-	printf("<small>Level %s<br></small>%s", $s, $sevnames[$s]);
+	printf("<small>Severity<br></small>%s", $sevnames[$s]);
 }
 
 function show_lik($l)
@@ -208,7 +174,7 @@ function show_lik($l)
 		exit(1);
 	}
 
-	printf("<small>Level %s<br></small>%s", $l, $liknames[$l]);
+	printf("<small>Likelihood<br></small>%s", $liknames[$l]);
 }
 
 function dangercolour($d)
@@ -218,14 +184,28 @@ function dangercolour($d)
 	return($riskcolours[$d]);
 }
 
-function show_dangerlevel($d, $long = false)
+function fmt_dangerlevel($d, $long = false, $w = 20)
 {
 	global $risknames, $risknameslong, $riskcolours;
-	printf("<span style=\"background-color:%s\"><small>Level %d</small><br>%s</span>",
-		$riskcolours[$d],
-		$d,
-		$long ? $risknameslong[$d] : $risknames[$d]);
+
+	return(
+		sprintf("%s%s",
+			svgcircle($w, $w, $riskcolours[$d]),
+			$long ? $risknameslong[$d] : $risknames[$d]));
 }
+
+function svgcircle($w, $h, $colour)
+{
+	return(sprintf("<img src=\"https://sysdiary.org/dot/x%s.png\" alt=\"%s\">",
+		$colour, $colour));
+	return(sprintf("
+<svg width=\"%d\" height=\"%d\">
+  <rect width=\"%d\" height=\"%d\"
+  stroke=\"black\" stroke-width=2 fill=\"%s\" />
+Sorry, your browser does not support inline SVG.
+</svg>", $w, $h, $w, $h, $colour));
+}
+
 
 function show_hazard($haz)
 {
@@ -237,28 +217,30 @@ function show_hazard($haz)
 
 	printf("<td>");
 	show_sev($haz->severitylikelihood->before->severity);
-	printf("<td>");
+	printf("<br>");
 	show_lik($haz->severitylikelihood->before->likelihood);
 
 	$d = dangerlevel(
 			$haz->severitylikelihood->before->severity,
 			$haz->severitylikelihood->before->likelihood);
-	printf("<td bgcolor=\"%s\">", dangercolour($d));
-	show_dangerlevel($d);
+	printf("<br>");
+	printf("<small>Risk</small><br>");
+	printf("%s", fmt_dangerlevel($d, false, 20));
 
 	printf("<td>");
 	showlistbullet($haz->controls);
 
 	printf("<td>");
 	show_sev($haz->severitylikelihood->after->severity);
-	printf("<td>");
+	printf("<br>");
 	show_lik($haz->severitylikelihood->after->likelihood);
 
 	$d = dangerlevel(
 			$haz->severitylikelihood->after->severity,
 			$haz->severitylikelihood->after->likelihood);
-	printf("<td bgcolor=\"%s\">", dangercolour($d));
-	show_dangerlevel($d);
+	printf("<br>");
+	printf("<small>Risk</small><br>");
+	printf("%s", fmt_dangerlevel($d, false, 20));
 	printf("\n");
 }
 
@@ -284,19 +266,9 @@ function show_hazardlist($hazs)
 	printf("<tr>");
 	printf("<th>%s", "Hazard");
 	printf("<th>%s", "Persons");
-	printf("<th colspan=3>%s", "Before Controls");
+	printf("<th>%s", "Before Controls");
 	printf("<th>%s", "Controls");
-	printf("<th colspan=3>%s", "After Controls");
-	printf("<tr>");
-	printf("<th>%s", "");
-	printf("<th>%s", "");
-	printf("<th>%s", "Severity");
-	printf("<th>%s", "Likelihood");
-	printf("<th>%s", "Risk");
-	printf("<th>%s", "");
-	printf("<th>%s", "Severity");
-	printf("<th>%s", "Likelihood");
-	printf("<th>%s", "Risk");
+	printf("<th>%s", "After Controls");
 
 	foreach ($hazs as $haz) {
 		show_hazard($haz);
@@ -318,8 +290,6 @@ function doit($filename)
 	$file = file_get_contents($filename, FILE_IGNORE_NEW_LINES);
 	$json = json_decode($file);
 
-	html_top();
-
 	$maxhaz = maxhazard($json->risk);
 
 	$toolimage = basename($filename, '.json') . ".jpg";
@@ -335,8 +305,6 @@ function doit($filename)
 
 	show_hazardlist($json->risk);
 	show_history($json->history);
-
-	html_bot();
 }
 
 if (!isset($argv[1])) {
