@@ -1,5 +1,5 @@
 # Tool
-Combi Drill
+Power planer
 # Induction
 None
 # Activity

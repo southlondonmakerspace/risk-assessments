@@ -1,5 +1,5 @@
 # Tool
-Hald Belt Sander
+Hand Belt Sander
 # Induction
 None
 # Activity
