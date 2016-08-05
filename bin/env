@@ -1,0 +1,9 @@
+# config
+# test api call at slms discourse
+# jcl/othinking/2016-07-29
+
+export APIUSER=someusername
+export APIKEY=longhexthing
+export APIURL=https://discourse.southlondonmakerspace.org
+
+# end

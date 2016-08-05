@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# rams_wrappage
+# take a body content and make a whole html page
+# jcl/othinking/2016-07-31
+
+# make an error if we're going to, before outputting anything
+#
+cat "$1" > /dev/null
+
+cat << ////
+<html>
+<head>
+<link rel=stylesheet href="../assets/style.css" type="text/css" media=screen>
+</head>
+<body>
+////
+
+cat "$1"
+
+cat << ////
+</body>
+</html>
+////
+
+# end

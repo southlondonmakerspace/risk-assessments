@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# updatetopic
+# update a topic title in discourse through api
+# jcl/othinking/2016-08-04
+
+set -e
+
+prog=$( basename $0 )
+
+if [ "$APIUSER" = "" -o "$APIKEY" = "" -o "$APIURL" = "" ]; then
+	echo "$prog: expecting APIUSER APIKEY APIURL in environment" >&2
+	exit 1
+fi
+
+if [ $# != 2 ] ; then
+	echo "Usage: $prog topicid title" >&2
+	exit 1
+fi
+
+topicid="$1"
+title="$2"
+
+set -x
+curl -v -f -s \
+	-X PUT \
+	-d skip_validations=true \
+	-d topic_id="$topicid" \
+	-d title="$title" \
+	-d api_username="$APIUSER" \
+	-d api_key="$APIKEY" \
+	"$APIURL/t/$topicid"
+
+# end

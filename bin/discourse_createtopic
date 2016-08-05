@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# createtopic
+# create api topic
+# jcl/othinking/2016-08-04
+
+set -e
+
+prog=$( basename $0 )
+
+if [ "$APIUSER" = "" -o "$APIKEY" = "" -o "$APIURL" = "" ]; then
+	echo "$prog: expecting APIUSER APIKEY APIURL in environment" >&2
+	exit 1
+fi
+
+# curl -X POST -d title="Title of my topic" -d raw="This is the body of my topic" -d category="category_slug" http://localhost:3000/posts?api_key=test_d7fd0429940&api_username=test_user
+
+if [ $# != 2 ] ; then
+	echo "Usage: $prog catid title" >&2
+	exit 1
+fi
+
+catid="$1"
+title="$2"
+
+curl -v -f -s \
+	-X POST \
+	-d skip_validations=true \
+	-d title="Placeholder for $title" \
+	-d category="$catid" \
+	-d raw="<h1>placeholder `date`</h1>" \
+	-d api_username="$APIUSER" \
+	-d api_key="$APIKEY" \
+	"$APIURL/posts"
+
+# end

@@ -19,9 +19,12 @@ for f in master/*.md; do
 
 	# build the html file if json changed
 	#
-	if [ ! -f out/$b.html -o out/$b.json -nt out/$b.html ]; then
-		echo "making out/$b.html"
-		bin/rams_jsontonice out/$b.json > out/$b.html.tmp
+	if [ ! -f out/$b.body -o out/$b.json -nt out/$b.body ]; then
+		echo "making out/$b.body"
+		bin/rams_jsontonice out/$b.json > out/$b.body.tmp
+		mv out/$b.body.tmp out/$b.body
+
+		bin/rams_wrappage out/$b.body > out/$b.html.tmp
 		mv out/$b.html.tmp out/$b.html
 	fi
 
@@ -30,7 +33,9 @@ for f in master/*.md; do
 	#
 	if [ ! -f images/$b.jpg ]; then
 		echo "making images/$b.jpg"
-		bin/mkimage images/$b.jpg 400 300 0xeeeeee 0x000000 "placeholder for $b"
+		bin/mkimage images/$b.jpg \
+			400 300 0xeeeeee 0x000000 \
+			"placeholder for $b"
 	fi
 done
 
